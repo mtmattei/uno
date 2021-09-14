@@ -586,6 +586,7 @@ namespace Uno.UI.RuntimeTests.Tests.Windows_UI_Xaml
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Top, 10, 0, false, false)]
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Top, 0, 10, false, false)]
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Top, 10, 10, false, false)]
+#if !__SKIA__
 		[DataRow(HorizontalAlignment.Center, VerticalAlignment.Top, 0, 0, false, false)]
 		[DataRow(HorizontalAlignment.Center, VerticalAlignment.Top, 10, 0, false, false)]
 		[DataRow(HorizontalAlignment.Center, VerticalAlignment.Top, 0, 10, false, false)]
@@ -594,10 +595,12 @@ namespace Uno.UI.RuntimeTests.Tests.Windows_UI_Xaml
 		[DataRow(HorizontalAlignment.Right, VerticalAlignment.Top, 10, 0, false, false)]
 		[DataRow(HorizontalAlignment.Right, VerticalAlignment.Top, 0, 10, false, false)]
 		[DataRow(HorizontalAlignment.Right, VerticalAlignment.Top, 10, 10, false, false)]
+#endif
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Top, 0, 0, false, false)]
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Top, 10, 0, false, false)]
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Top, 0, 10, false, false)]
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Top, 10, 10, false, false)]
+#if !__SKIA__
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Center, 0, 0, false, false)]
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Center, 10, 0, false, false)]
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Center, 0, 10, false, false)]
@@ -630,10 +633,12 @@ namespace Uno.UI.RuntimeTests.Tests.Windows_UI_Xaml
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Bottom, 10, 0, false, false)]
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Bottom, 0, 10, false, false)]
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Bottom, 10, 10, false, false)]
+#endif
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Stretch, 0, 0, false, false)]
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Stretch, 10, 0, false, false)]
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Stretch, 0, 10, false, false)]
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Stretch, 10, 10, false, false)]
+#if !__SKIA__
 		[DataRow(HorizontalAlignment.Center, VerticalAlignment.Stretch, 0, 0, false, false)]
 		[DataRow(HorizontalAlignment.Center, VerticalAlignment.Stretch, 10, 0, false, false)]
 		[DataRow(HorizontalAlignment.Center, VerticalAlignment.Stretch, 0, 10, false, false)]
@@ -642,6 +647,7 @@ namespace Uno.UI.RuntimeTests.Tests.Windows_UI_Xaml
 		[DataRow(HorizontalAlignment.Right, VerticalAlignment.Stretch, 10, 0, false, false)]
 		[DataRow(HorizontalAlignment.Right, VerticalAlignment.Stretch, 0, 10, false, false)]
 		[DataRow(HorizontalAlignment.Right, VerticalAlignment.Stretch, 10, 10, false, false)]
+#endif
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Stretch, 0, 0, false, false)]
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Stretch, 10, 0, false, false)]
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Stretch, 0, 10, false, false)]
@@ -664,6 +670,7 @@ namespace Uno.UI.RuntimeTests.Tests.Windows_UI_Xaml
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Top, 10, 0, true, false)]
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Top, 0, 10, true, false)]
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Top, 10, 10, true, false)]
+#if !__SKIA__
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Center, 0, 0, true, false)]
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Center, 10, 0, true, false)]
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Center, 0, 10, true, false)]
@@ -696,6 +703,7 @@ namespace Uno.UI.RuntimeTests.Tests.Windows_UI_Xaml
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Bottom, 10, 0, true, false)]
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Bottom, 0, 10, true, false)]
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Bottom, 10, 10, true, false)]
+#endif
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Stretch, 0, 0, true, false)]
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Stretch, 10, 0, true, false)]
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Stretch, 0, 10, true, false)]
@@ -718,6 +726,7 @@ namespace Uno.UI.RuntimeTests.Tests.Windows_UI_Xaml
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Top, 10, 0, false, true)]
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Top, 0, 10, false, true)]
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Top, 10, 10, false, true)]
+#if !__SKIA__
 		[DataRow(HorizontalAlignment.Center, VerticalAlignment.Top, 0, 0, false, true)]
 		[DataRow(HorizontalAlignment.Center, VerticalAlignment.Top, 10, 0, false, true)]
 		[DataRow(HorizontalAlignment.Center, VerticalAlignment.Top, 0, 10, false, true)]
@@ -726,6 +735,7 @@ namespace Uno.UI.RuntimeTests.Tests.Windows_UI_Xaml
 		[DataRow(HorizontalAlignment.Right, VerticalAlignment.Top, 10, 0, false, true)]
 		[DataRow(HorizontalAlignment.Right, VerticalAlignment.Top, 0, 10, false, true)]
 		[DataRow(HorizontalAlignment.Right, VerticalAlignment.Top, 10, 10, false, true)]
+#endif
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Top, 0, 0, false, true)]
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Top, 10, 0, false, true)]
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Top, 0, 10, false, true)]
@@ -734,6 +744,7 @@ namespace Uno.UI.RuntimeTests.Tests.Windows_UI_Xaml
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Center, 10, 0, false, true)]
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Center, 0, 10, false, true)]
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Center, 10, 10, false, true)]
+#if !__SKIA__
 		[DataRow(HorizontalAlignment.Center, VerticalAlignment.Center, 0, 0, false, true)]
 		[DataRow(HorizontalAlignment.Center, VerticalAlignment.Center, 10, 0, false, true)]
 		[DataRow(HorizontalAlignment.Center, VerticalAlignment.Center, 0, 10, false, true)]
@@ -742,6 +753,7 @@ namespace Uno.UI.RuntimeTests.Tests.Windows_UI_Xaml
 		[DataRow(HorizontalAlignment.Right, VerticalAlignment.Center, 10, 0, false, true)]
 		[DataRow(HorizontalAlignment.Right, VerticalAlignment.Center, 0, 10, false, true)]
 		[DataRow(HorizontalAlignment.Right, VerticalAlignment.Center, 10, 10, false, true)]
+#endif
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Center, 0, 0, false, true)]
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Center, 10, 0, false, true)]
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Center, 0, 10, false, true)]
@@ -750,6 +762,7 @@ namespace Uno.UI.RuntimeTests.Tests.Windows_UI_Xaml
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Bottom, 10, 0, false, true)]
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Bottom, 0, 10, false, true)]
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Bottom, 10, 10, false, true)]
+#if !__SKIA__
 		[DataRow(HorizontalAlignment.Center, VerticalAlignment.Bottom, 0, 0, false, true)]
 		[DataRow(HorizontalAlignment.Center, VerticalAlignment.Bottom, 10, 0, false, true)]
 		[DataRow(HorizontalAlignment.Center, VerticalAlignment.Bottom, 0, 10, false, true)]
@@ -758,6 +771,7 @@ namespace Uno.UI.RuntimeTests.Tests.Windows_UI_Xaml
 		[DataRow(HorizontalAlignment.Right, VerticalAlignment.Bottom, 10, 0, false, true)]
 		[DataRow(HorizontalAlignment.Right, VerticalAlignment.Bottom, 0, 10, false, true)]
 		[DataRow(HorizontalAlignment.Right, VerticalAlignment.Bottom, 10, 10, false, true)]
+#endif
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Bottom, 0, 0, false, true)]
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Bottom, 10, 0, false, true)]
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Bottom, 0, 10, false, true)]
@@ -766,6 +780,7 @@ namespace Uno.UI.RuntimeTests.Tests.Windows_UI_Xaml
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Stretch, 10, 0, false, true)]
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Stretch, 0, 10, false, true)]
 		[DataRow(HorizontalAlignment.Left, VerticalAlignment.Stretch, 10, 10, false, true)]
+#if !__SKIA__
 		[DataRow(HorizontalAlignment.Center, VerticalAlignment.Stretch, 0, 0, false, true)]
 		[DataRow(HorizontalAlignment.Center, VerticalAlignment.Stretch, 10, 0, false, true)]
 		[DataRow(HorizontalAlignment.Center, VerticalAlignment.Stretch, 0, 10, false, true)]
@@ -774,6 +789,7 @@ namespace Uno.UI.RuntimeTests.Tests.Windows_UI_Xaml
 		[DataRow(HorizontalAlignment.Right, VerticalAlignment.Stretch, 10, 0, false, true)]
 		[DataRow(HorizontalAlignment.Right, VerticalAlignment.Stretch, 0, 10, false, true)]
 		[DataRow(HorizontalAlignment.Right, VerticalAlignment.Stretch, 10, 10, false, true)]
+#endif
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Stretch, 0, 0, false, true)]
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Stretch, 10, 0, false, true)]
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Stretch, 0, 10, false, true)]
@@ -844,7 +860,7 @@ namespace Uno.UI.RuntimeTests.Tests.Windows_UI_Xaml
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Stretch, 10, 0, true, true)]
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Stretch, 0, 10, true, true)]
 		[DataRow(HorizontalAlignment.Stretch, VerticalAlignment.Stretch, 10, 10, true, true)]
-		#endregion
+#endregion
 		public async Task When_PaddedElementBiggerThanParentScrollViewer_Then_TransformToVisual(
 			HorizontalAlignment hAlign,
 			VerticalAlignment vAlign,
