@@ -120,7 +120,7 @@
 	    <DependentUpon>VisualStatesMixins.tt</DependentUpon>
 	  </None>
 	</ItemGroup>
-
+	
 	<ItemGroup>
 	  <None Update="Mixins\Wasm\VisualStatesMixins.tt">
 	    <LastGenOutput>VisualStatesMixins.g.cs</LastGenOutput>
