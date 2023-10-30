@@ -1,4 +1,4 @@
----
+﻿---
 uid: Uno.Development.MigratingFromPreviousReleases
 ---
 
@@ -66,7 +66,7 @@ This property was incorrectly located on `FrameworkElement` but its behavior has
 This method has been removed as it is not available in WinUI. You can migrate code using this method to use the `FrameworkElement.Loaded` event instead.
 
 #### Move `SwipeControl`, `SwipeItem`, `SwipeItemInvokedEventArgs`, `SwipeMode`, `SwipeItems`, `SwipeBehaviorOnInvoked`, `MenuBar`, `MenuBarItem`, and `MenuBarItemFlyout` implementation from WUX namespace to MUX namespace.
-These controls were present in both the `Windows.UI.Xaml` and `Microsoft.UI.Xaml`. Those are now located in the `Microsoft.UI.Xaml` namespace for the UWP version of Uno (Uno.UI).
+These controls were present in both the `Microsoft.UI.Xaml` and `Microsoft.UI.Xaml`. Those are now located in the `Microsoft.UI.Xaml` namespace for the UWP version of Uno (Uno.UI).
 
 #### Move `AnimatedVisualPlayer`, `IAnimatedVisualSource `, and `IThemableAnimatedVisualSource` from WUX to MUX and `Microsoft.Toolkit.Uwp.UI.Lottie` namespace to `CommunityToolkit.WinUI.Lottie`
 This change moves the `AnimatedVisualPlayer` to the appropriate namespace for WinUI, aligned with the WinAppSDK version of the Windows Community Toolkit.
@@ -153,9 +153,9 @@ There used two be two `RenderSurfaceType`s, `Uno.UI.Runtime.Skia.RenderSurfaceTy
 #### `Panel`s no longer measure or arrange any children in `MeasureOverride` or `ArrangeOverride`, respectively
 `Panel`s used to measure and arrange the first child in `MeasureOverride` or `ArrangeOverride`, respectively. This is no longer the case. Now, to match WinUI, `Panel`s just return an empty size in `MeasureOverride`, and the `finalSize` as is in `ArrangeOverride`. You should override these layout-override methods in `Panel`-derived subclasses instead.
 
-#### Remove `Windows.UI.Xaml.Controls.NavigationView` in Uno.WinUI
+#### Remove `Microsoft.UI.Xaml.Controls.NavigationView` in Uno.WinUI
 
-Uno.WinUI used to have NavigationView both in `Microsoft.UI.Xaml.Controls` and `Windows.UI.Xaml.Controls` namespaces. It's now removed from `Windows.UI.Xaml.Controls` and kept only in `Microsoft.UI.Xaml.Controls` namespace.
+Uno.WinUI used to have NavigationView both in `Microsoft.UI.Xaml.Controls` and `Microsoft.UI.Xaml.Controls` namespaces. It's now removed from `Microsoft.UI.Xaml.Controls` and kept only in `Microsoft.UI.Xaml.Controls` namespace.
 
 ### Uno Platform 4.10
 This release does not require upgrade steps.
@@ -295,22 +295,22 @@ Here's how to upgrade:
                         builder.AddFilter("Microsoft", LogLevel.Warning);
 
                         // Generic Xaml events
-                        // builder.AddFilter("Windows.UI.Xaml", LogLevel.Debug );
-                        // builder.AddFilter("Windows.UI.Xaml.VisualStateGroup", LogLevel.Debug );
-                        // builder.AddFilter("Windows.UI.Xaml.StateTriggerBase", LogLevel.Debug );
-                        // builder.AddFilter("Windows.UI.Xaml.UIElement", LogLevel.Debug );
-                        // builder.AddFilter("Windows.UI.Xaml.FrameworkElement", LogLevel.Trace );
+                        // builder.AddFilter("Microsoft.UI.Xaml", LogLevel.Debug );
+                        // builder.AddFilter("Microsoft.UI.Xaml.VisualStateGroup", LogLevel.Debug );
+                        // builder.AddFilter("Microsoft.UI.Xaml.StateTriggerBase", LogLevel.Debug );
+                        // builder.AddFilter("Microsoft.UI.Xaml.UIElement", LogLevel.Debug );
+                        // builder.AddFilter("Microsoft.UI.Xaml.FrameworkElement", LogLevel.Trace );
 
                         // Layouter specific messages
-                        // builder.AddFilter("Windows.UI.Xaml.Controls", LogLevel.Debug );
-                        // builder.AddFilter("Windows.UI.Xaml.Controls.Layouter", LogLevel.Debug );
-                        // builder.AddFilter("Windows.UI.Xaml.Controls.Panel", LogLevel.Debug );
+                        // builder.AddFilter("Microsoft.UI.Xaml.Controls", LogLevel.Debug );
+                        // builder.AddFilter("Microsoft.UI.Xaml.Controls.Layouter", LogLevel.Debug );
+                        // builder.AddFilter("Microsoft.UI.Xaml.Controls.Panel", LogLevel.Debug );
 
                         // builder.AddFilter("Windows.Storage", LogLevel.Debug );
 
                         // Binding related messages
-                        // builder.AddFilter("Windows.UI.Xaml.Data", LogLevel.Debug );
-                        // builder.AddFilter("Windows.UI.Xaml.Data", LogLevel.Debug );
+                        // builder.AddFilter("Microsoft.UI.Xaml.Data", LogLevel.Debug );
+                        // builder.AddFilter("Microsoft.UI.Xaml.Data", LogLevel.Debug );
 
                         // Binder memory references tracking
                         // builder.AddFilter("Uno.UI.DataBinding.BinderReferenceHolder", LogLevel.Debug );
