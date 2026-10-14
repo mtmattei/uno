@@ -1,4 +1,4 @@
-"""Browser acceptance checks against the compiled Uno app, not mocked state."""
+"""Browser acceptance checks against compiled Uno, without mocked app state."""
 import functools, http.server, json, os, shutil, threading, traceback, zipfile
 from pathlib import Path
 from playwright.sync_api import sync_playwright, expect
@@ -40,6 +40,7 @@ with sync_playwright() as p:
         page.locator('.lesson-card').first.click()
         page.wait_for_selector('#runtime-status[data-status="live"]', timeout=90000)
         page.wait_for_function("document.querySelector('#runtime-revision').textContent.includes('STATE')")
+        page.wait_for_timeout(500)
         check('Real Uno WebAssembly runtime connects to host')
         page.locator('[data-action="tab"][data-value="experiment"]').click()
         page.locator('#title-input').fill('A title from the browser test')
@@ -59,11 +60,10 @@ with sync_playwright() as p:
         page.locator('[data-action="challenge-check"]').click()
         expect(page.locator('#check-results .pass')).to_have_count(2)
         expect(page.locator('.completion')).to_be_visible()
-        check('Repaired binding passes two real control-value checks')
+        check('Repaired binding passes two actual control-value checks')
         page.screenshot(path=str(QA / '03-anatomy-desktop.png'), full_page=True)
         page.locator('[data-action="select"][data-value="servings"]').first.click()
-        page.locator('#servings').fill('4')
-        page.locator('#servings').dispatch_event('input')
+        page.locator('#servings').evaluate("e => { e.value = '4'; e.dispatchEvent(new Event('input', {bubbles:true})); }")
         expect(page.locator('#watch-coffee')).to_have_text('72 g')
         expect(page.locator('#watch-water')).to_have_text('160 ml')
         check('Serving changes update C# derived properties')
@@ -87,6 +87,18 @@ with sync_playwright() as p:
         page.locator('[data-action="tab"][data-value="source"]').click()
         expect(page.locator('.code-card pre')).to_contain_text('Binding Title, Mode=OneWay')
         check('Inspector shows packaged source, separate from overrides')
+        page.goto('http://127.0.0.1:4173/#/lab/mise?component=title&tab=experiment')
+        page.wait_for_selector('#runtime-status[data-status="live"]', timeout=90000)
+        expect(page.locator('#watch-source')).to_have_text('My exported morning', timeout=15000)
+        check('Saved edits survive navigation')
+        page.reload()
+        page.wait_for_selector('#runtime-status[data-status="live"]', timeout=90000)
+        expect(page.locator('#watch-source')).to_have_text('My exported morning', timeout=15000)
+        check('Saved edits survive full reload')
+        page.goto('http://127.0.0.1:4173/#/lab/mise?component=photo&tab=experiment')
+        page.wait_for_selector('#runtime-status[data-status="live"]', timeout=90000)
+        expect(page.locator('#selection-title')).to_have_text('Recipe photograph', timeout=15000)
+        check('Shared lesson opens the intended component')
         page.set_viewport_size({'width':390,'height':844})
         page.screenshot(path=str(QA / '04-anatomy-mobile.png'), full_page=True)
         check('Mobile lab has no horizontal page overflow', page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
