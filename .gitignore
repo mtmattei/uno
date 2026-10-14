@@ -1,0 +1,9 @@
+**/bin/
+**/obj/
+dist/
+publish/
+qa/
+__pycache__/
+.venv/
+node_modules/
+src/Mise/Assets/coffee.png

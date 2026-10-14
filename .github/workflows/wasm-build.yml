@@ -21,19 +21,60 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: anatomy-source
+          include-hidden-files: true
           path: |
             src
             site
             scripts
             tests
+            .github/workflows/wasm-build.yml
+            .gitignore
             global.json
             NuGet.Config
             README.md
-          retention-days: 7
+          retention-days: 14
+      - run: node --check site/app.js && node --check site/zip.js
+      - run: dotnet run --project tests/ModelTests/ModelTests.csproj
       - run: dotnet workload install wasm-tools --skip-manifest-update
       - run: dotnet publish src/Mise/Mise.csproj -f net10.0-browserwasm -c Release -o publish
-      - uses: actions/upload-artifact@v4
+      - run: python3 scripts/package_site.py
+      - run: python3 -m pip install playwright==1.56.0
+      - name: Browser acceptance checks
+        run: python3 tests/test_web.py
+      - name: Save compiled site
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: mise-wasm
-          path: publish/wwwroot
-          retention-days: 7
+          name: app-anatomy-site
+          path: dist
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Save browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: anatomy-qa
+          path: qa
+          if-no-files-found: ignore
+          retention-days: 14
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - name: Deploy App Anatomy
+        id: deployment
+        uses: actions/deploy-pages@v4

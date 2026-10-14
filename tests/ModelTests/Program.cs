@@ -1,0 +1,24 @@
+using Mise;
+var count = 0;
+void Check(bool ok, string name) { if (!ok) throw new Exception(name); count++; Console.WriteLine($"PASS {name}"); }
+var vm = new RecipeViewModel();
+var changes = new List<string?>();
+vm.PropertyChanged += (_, e) => changes.Add(e.PropertyName);
+vm.Title = "  Sunday coffee  ";
+Check(vm.Title == "Sunday coffee" && changes.Contains("Title"), "Title trims and notifies");
+vm.Title = new string('a', 130);
+Check(vm.Title.Length == 120, "Title length is bounded");
+vm.Title = " "; Check(vm.Title == "Untitled recipe", "Empty title has a safe fallback");
+changes.Clear(); vm.Servings = 4;
+Check(vm.Coffee == "72 g" && vm.Water == "160 ml" && vm.Milk == "120 ml", "Derived quantities scale");
+Check(new[] {"Servings", "ServingsLabel", "Coffee", "Water", "Milk"}.All(changes.Contains), "Dependent properties notify");
+vm.Servings = 0; Check(vm.Servings == 1, "Lower serving bound");
+vm.Servings = 100; Check(vm.Servings == 8, "Upper serving bound");
+var first = vm.SaveAsync();
+Check(vm.IsBusy && !vm.SaveCommand.CanExecute(null), "Save exposes busy and disables command");
+var overlapping = vm.SaveAsync();
+await Task.WhenAll(first, overlapping);
+Check(vm.IsSaved && !vm.IsBusy && vm.SaveCommand.CanExecute(null), "Overlapping save is guarded");
+await vm.SaveAsync(); Check(!vm.IsSaved, "Second completed save toggles state");
+vm.Reset(); Check(vm.Servings == 2 && !vm.IsSaved, "Reset restores defaults");
+Console.WriteLine($"{count} model checks passed.");
