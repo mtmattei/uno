@@ -4,7 +4,7 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright, expect
 ROOT = Path(__file__).resolve().parents[1]
 QA = ROOT / 'qa'; QA.mkdir(exist_ok=True)
-results = []; logs = []; page_errors = []
+results, logs, page_errors = [], [], []
 def check(name, condition=True):
     assert condition, name
     results.append({'name': name, 'passed': True})
@@ -21,13 +21,14 @@ with sync_playwright() as p:
     page = context.new_page()
     page.on('console', lambda m: logs.append(m.type + ': ' + m.text))
     page.on('pageerror', lambda e: page_errors.append(str(e)))
+    page.on('response', lambda r: logs.append(f'HTTP {r.status}: {r.url}') if r.status >= 400 else None)
     page.set_default_timeout(20000)
     def connected():
         page.wait_for_selector('#runtime-status[data-status="live"]', timeout=90000)
         page.wait_for_function("document.querySelector('#runtime-revision').textContent.includes('STATE')")
         page.wait_for_timeout(400)
     def select(component):
-        page.locator(f'[data-action="select"][data-value="{component}"]').first.click()
+        page.locator(f'#tree [data-action="select"][data-value="{component}"]').click()
     try:
         page.goto('http://127.0.0.1:4173/', wait_until='networkidle')
         expect(page.locator('h1')).to_contain_text("Don't just run it.")
@@ -45,7 +46,7 @@ with sync_playwright() as p:
         check('Gallery search and empty-state recovery')
         page.locator('.lesson-card').first.click(); connected()
         check('Real Uno WebAssembly runtime connects to host')
-        page.locator('[data-action="tab"][data-value="experiment"]').click()
+        page.locator('#tab-experiment').click()
         page.locator('#title-input').fill('A title from the browser test')
         expect(page.locator('#watch-rendered')).to_have_text('A title from the browser test')
         check('OneWay binding updates the actual TextBlock')
@@ -93,7 +94,7 @@ with sync_playwright() as p:
             check('Export includes edited source', 'My exported morning' in z.read('src/Mise/RecipeViewModel.cs').decode())
             check('Export includes image and session snapshot', 'src/Mise/Assets/coffee.png' in z.namelist() and 'anatomy-session.json' in z.namelist())
         page.locator('#close-dialog').click()
-        page.locator('[data-action="tab"][data-value="source"]').click()
+        page.locator('#tab-source').click()
         expect(page.locator('.code-card pre')).to_contain_text('Binding Title, Mode=OneWay')
         check('Inspector shows packaged source, separate from overrides')
         page.goto('http://127.0.0.1:4173/#/lab/mise?component=title&tab=experiment'); connected()
