@@ -14,6 +14,7 @@
       if (typeof dispatch !== 'function') throw new Error('Missing .NET bridge export.');
       send({ type: 'ready', runtime: 'uno-wasm', app: 'mise' });
       dispatch(JSON.stringify({ action: 'snapshot' }));
+      if (window.parent === window) dispatch(JSON.stringify({ action: 'mode', value: 'use' }));
     } catch (error) { send({ type: 'error', message: String(error.message || error) }); }
   }
   function emit(json) { const payload = JSON.parse(json); if (payload.type === 'state') latest = payload; send(payload); }
