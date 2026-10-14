@@ -3,8 +3,8 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 namespace Mise;
 
-// No server or account: recipe data and the save operation are local.
 // The same ViewModel is used by the running app and the model checks.
+// The save operation is local. It does not call a backend service.
 public sealed class RecipeViewModel : INotifyPropertyChanged
 {
     private string _title = "A slower morning espresso";
@@ -12,10 +12,7 @@ public sealed class RecipeViewModel : INotifyPropertyChanged
     private bool _saved, _busy;
     public event PropertyChangedEventHandler? PropertyChanged;
     public event Action<string>? Traced;
-    public RecipeViewModel()
-    {
-        SaveCommand = new AsyncCommand(SaveAsync, () => !IsBusy);
-    }
+    public RecipeViewModel() => SaveCommand = new AsyncCommand(SaveAsync, () => !IsBusy);
     public string Title
     {
         get => _title;
@@ -63,7 +60,7 @@ public sealed class RecipeViewModel : INotifyPropertyChanged
     {
         if (IsBusy) return;
         IsBusy = true;
-        Traced?.Invoke("SaveCommand.Execute → IsBusy = true");
+        Traced?.Invoke("SaveAsync started → IsBusy = true");
         try
         {
             await Task.Delay(450); // Deliberate local delay, not a network request.
@@ -73,7 +70,7 @@ public sealed class RecipeViewModel : INotifyPropertyChanged
         finally
         {
             IsBusy = false;
-            Traced?.Invoke("SaveCommand complete → IsBusy = false");
+            Traced?.Invoke("SaveAsync complete → IsBusy = false");
         }
     }
     public void Reset()

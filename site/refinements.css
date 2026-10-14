@@ -1,0 +1,11 @@
+/* Focus stays on actual controls, not a page-sized outline after routing. */
+#main:focus{outline:none}
+.nav>.btn{white-space:nowrap}
+@media(max-width:740px){
+ .step{display:block;padding:24px 0}
+ .step-number{margin:0 0 13px;white-space:nowrap;font-size:9px}
+ .step .code-inline{margin-top:14px}
+ .hero-study .mini-app,.hero-study:hover .mini-app{transform:translate(-14px,-13px) rotate(-3deg) scale(.88)}
+ .hero-study .source-float{bottom:53px;width:206px}
+ .study-caption{right:15px;bottom:14px;line-height:1.6;background:#edf0e5;padding-top:7px}
+}
