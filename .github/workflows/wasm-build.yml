@@ -1,0 +1,26 @@
+name: App Anatomy WebAssembly build
+on:
+  push:
+    branches: [app-anatomy-mvp]
+permissions:
+  contents: read
+concurrency:
+  group: anatomy-build
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - run: python3 scripts/fetch-assets.py
+      - run: dotnet workload install wasm-tools --skip-manifest-update
+      - run: dotnet publish src/Mise/Mise.csproj -f net10.0-browserwasm -c Release -o publish
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mise-wasm
+          path: publish/wwwroot
+          retention-days: 7

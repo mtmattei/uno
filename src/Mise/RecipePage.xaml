@@ -1,0 +1,58 @@
+<Page x:Class="Mise.RecipePage"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ Background="#FFFCF6" RequestedTheme="Light">
+ <ScrollViewer x:Name="Scroller" HorizontalScrollBarVisibility="Disabled">
+  <Border x:Name="PageRegion" Tag="page" Padding="22" BorderThickness="1" BorderBrush="Transparent" Tapped="OnRegionTapped">
+   <StackPanel x:Name="ContentStack" Spacing="16">
+    <Grid Padding="0,0,0,16" BorderBrush="#E7E2D7" BorderThickness="0,0,0,1">
+     <StackPanel><TextBlock Text="mise." FontFamily="Georgia" FontSize="30" FontWeight="Bold" Foreground="#2C3025" /><TextBlock Text="GOOD THINGS, DAILY" FontSize="8" CharacterSpacing="150" Foreground="#8A8070" /></StackPanel>
+     <TextBlock Text="{Binding SavedCount}" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="11" Foreground="#7A7366" />
+    </Grid>
+    <!-- anatomy:photo:start -->
+    <Border x:Name="PhotoRegion" Tag="photo" BorderThickness="1" BorderBrush="Transparent" CornerRadius="8" Tapped="OnRegionTapped">
+     <Image x:Name="RecipePhoto" Source="ms-appx:///Assets/coffee.png" Height="194" Stretch="UniformToFill" AutomationProperties.Name="An espresso cup on a wooden table" />
+    </Border>
+    <!-- anatomy:photo:end -->
+    <!-- anatomy:title:start -->
+    <Border x:Name="TitleRegion" Tag="title" BorderThickness="1" BorderBrush="Transparent" Tapped="OnRegionTapped">
+     <TextBlock x:Name="RecipeTitle" Text="{Binding Title, Mode=OneWay}"
+                TextWrapping="Wrap" FontFamily="Georgia" FontSize="36" Foreground="#2C3025" />
+    </Border>
+    <!-- anatomy:title:end -->
+    <TextBlock Text="5 minutes    ·    Easy does it" FontSize="11" Foreground="#817463" />
+    <TextBlock Text="A small ritual worth making time for. Fresh coffee, warm cups, and a moment to yourself." TextWrapping="Wrap" FontSize="12" Foreground="#817463" />
+    <!-- anatomy:save:start -->
+    <Border x:Name="SaveRegion" Tag="save" BorderThickness="1" BorderBrush="Transparent" Tapped="OnRegionTapped">
+     <Button x:Name="SaveButton" Content="{Binding SaveLabel}" Click="OnSaveClick"
+             HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+             Background="Transparent" Foreground="#4A463C" BorderBrush="#D5CDBE"
+             CornerRadius="5" FontSize="12" MinHeight="42" />
+    </Border>
+    <!-- anatomy:save:end -->
+    <!-- anatomy:servings:start -->
+    <Border x:Name="ServingsRegion" Tag="servings" BorderThickness="1" BorderBrush="Transparent" Tapped="OnRegionTapped">
+     <Grid ColumnDefinitions="*,Auto" Margin="0,2,0,0">
+      <TextBlock Text="Ingredients" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="#34392D" />
+      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="7">
+       <Button Content="−" Click="OnLess" AutomationProperties.Name="Fewer servings" MinWidth="28" MinHeight="30" Padding="6,2" Background="#FAF6EE" BorderBrush="#DBD4C7" CornerRadius="4" />
+       <TextBlock Text="{Binding ServingsLabel}" VerticalAlignment="Center" FontSize="10" Foreground="#817463" />
+       <Button Content="+" Click="OnMore" AutomationProperties.Name="More servings" MinWidth="28" MinHeight="30" Padding="6,2" Background="#FAF6EE" BorderBrush="#DBD4C7" CornerRadius="4" />
+      </StackPanel>
+     </Grid>
+    </Border>
+    <!-- anatomy:servings:end -->
+    <!-- anatomy:ingredients:start -->
+    <Border x:Name="IngredientsRegion" Tag="ingredients" BorderThickness="1" BorderBrush="Transparent" Tapped="OnRegionTapped">
+     <StackPanel Spacing="1">
+      <Grid ColumnDefinitions="*,Auto"><CheckBox x:Name="CoffeeCheck" Content="Freshly ground coffee" FontSize="11" MinWidth="0" Checked="OnChecked" Unchecked="OnChecked" /><TextBlock Grid.Column="1" Text="{Binding Coffee}" FontSize="10" Foreground="#95866F" VerticalAlignment="Center" /></Grid>
+      <Grid ColumnDefinitions="*,Auto"><CheckBox x:Name="WaterCheck" Content="Filtered water" FontSize="11" MinWidth="0" Checked="OnChecked" Unchecked="OnChecked" /><TextBlock Grid.Column="1" Text="{Binding Water}" FontSize="10" Foreground="#95866F" VerticalAlignment="Center" /></Grid>
+      <Grid ColumnDefinitions="*,Auto"><CheckBox x:Name="MilkCheck" Content="Milk, on the side" FontSize="11" MinWidth="0" Checked="OnChecked" Unchecked="OnChecked" /><TextBlock Grid.Column="1" Text="{Binding Milk}" FontSize="10" Foreground="#95866F" VerticalAlignment="Center" /></Grid>
+     </StackPanel>
+    </Border>
+    <!-- anatomy:ingredients:end -->
+    <TextBlock Text="A LITTLE EVERYDAY MAGIC" FontSize="8" CharacterSpacing="140" Foreground="#A4967E" HorizontalAlignment="Center" Margin="0,4,0,10" />
+   </StackPanel>
+  </Border>
+ </ScrollViewer>
+</Page>
