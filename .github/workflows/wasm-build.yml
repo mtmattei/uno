@@ -40,7 +40,11 @@ jobs:
       - run: python3 scripts/package_site.py
       - run: python3 -m pip install playwright==1.56.0
       - name: Browser acceptance checks
+        id: browser
         run: python3 tests/test_web.py
+      - name: Diagnose a failed startup
+        if: failure() && steps.browser.outcome == 'failure'
+        run: python3 tests/diagnose_startup.py
       - name: Save compiled site
         if: always()
         uses: actions/upload-artifact@v4
