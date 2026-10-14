@@ -1,0 +1,78 @@
+name: Apply reviewed App Anatomy source fixes
+on:
+  push:
+    branches: [app-anatomy-mvp]
+    paths: ['.github/workflows/reviewed-source-fixes.yml']
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: app-anatomy-mvp
+      - name: Apply bounded reviewed edits
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          ROOT=Path('.')
+          def edit(path, old, new, expected=1):
+              p=ROOT/path; text=p.read_text()
+              if text.count(old)!=expected: raise RuntimeError(f'{path}: expected {expected} matches for {old[:70]!r}, got {text.count(old)}')
+              p.write_text(text.replace(old,new))
+          edit('src/Mise/RecipePage.xaml','''     <TextBlock x:Name="RecipeTitle" Text="{Binding Title, Mode=OneWay}"
+                          TextWrapping="Wrap" FontFamily="Georgia" FontSize="36" Foreground="#2C3025" />''','''     <Grid>
+                <TextBlock x:Name="LiveTitle" Text="{x:Bind ViewModel.Title, Mode=OneWay}"
+                           TextWrapping="Wrap" FontFamily="Georgia" FontSize="36" Foreground="#2C3025" />
+                <TextBlock x:Name="OnceTitle" Text="{x:Bind ViewModel.Title, Mode=OneTime}" Visibility="Collapsed"
+                           TextWrapping="Wrap" FontFamily="Georgia" FontSize="36" Foreground="#2C3025" />
+               </Grid>''')
+          cs=ROOT/'src/Mise/RecipePage.xaml.cs'
+          s=cs.read_text()
+          start=s.index('    // The experiment replaces a real WinUI Binding')
+          end=s.index('    internal async Task Receive',start)
+          s=s[:start]+'''    // Both modes are genuine compiled XAML bindings. The active TextBlock is
+              // selected explicitly; JavaScript never manufactures the rendered value.
+              private TextBlock ActiveTitle => _binding == "OneTime" ? OnceTitle : LiveTitle;
+              private void SetBindingMode(string mode)
+              {
+                  if (mode is not ("OneWay" or "OneTime")) return;
+                  _binding = mode;
+                  this.Bindings.Update();
+                  LiveTitle.Visibility = mode == "OneWay" ? Visibility.Visible : Visibility.Collapsed;
+                  OnceTitle.Visibility = mode == "OneTime" ? Visibility.Visible : Visibility.Collapsed;
+              }
+              private void SetTitleFontSize(double size)
+              {
+                  LiveTitle.FontSize = OnceTitle.FontSize = size;
+              }
+          '''+s[end:]
+          s=s.replace('RecipeTitle','ActiveTitle').replace('_loaded = true; BrowserBridge.Attach();','_loaded = true; SetBindingMode(_binding); BrowserBridge.Attach();')
+          s=s.replace('ActiveTitle.FontSize = Math.Clamp(value.GetDouble(), 24, 52);','SetTitleFontSize(Math.Clamp(value.GetDouble(), 24, 52));')
+          s=s.replace('ActiveTitle.FontSize = 36;','SetTitleFontSize(36);')
+          cs.write_text(s)
+          edit('src/Mise/Platforms/WebAssembly/Program.cs','        var host = UnoPlatformHostBuilder.Create()','        Uno.UI.FeatureConfiguration.AutomationPeer.AutoEnableAccessibility = true;\n        var host = UnoPlatformHostBuilder.Create()')
+          edit('site/app.js','The heading reads Title from the ViewModel. A OneWay binding listens for source changes and updates the TextBlock. A OneTime binding reads the value without continuing to follow it.','This title uses compiled x:Bind. OneWay follows ViewModel.Title changes. OneTime reads the value when its binding is refreshed, without following later property changes.')
+          edit('site/app.js','Choosing a mode creates a new real binding with the current source value.','Choosing a mode refreshes its compiled binding with the current source value.')
+          edit('site/app.js',"The experiment uses SetBinding in C#. Export writes your chosen mode into the project's XAML.",'Both modes are compiled from XAML. The experiment switches between two actual TextBlocks and refreshes their bindings when you choose a mode.')
+          edit('site/app.js','Text="{Binding Title, Mode=${s.binding}}"','Text="{x:Bind ViewModel.Title, Mode=${s.binding}}"')
+          edit('site/app.js',".replace('Text=\"{Binding Title, Mode=OneWay}\"',`Text=\"{Binding Title, Mode=${s.binding==='OneTime'?'OneTime':'OneWay'}}\"`).replace('FontSize=\"36\"'", ".replaceAll('FontSize=\"36\"'")
+          edit('site/app.js',"   const literal=JSON.stringify",'''   const pagePath='src/Mise/RecipePage.xaml.cs';
+             files[pagePath]=files[pagePath].replace('_binding = "OneWay"',`_binding = "${s.binding==='OneTime'?'OneTime':'OneWay'}"`);
+             const literal=JSON.stringify''')
+          edit('tests/test_web.py',"frame.get_by_role('button', name=re.compile('Saved to your recipes')).click()","frame.locator('[xamltype=\"Microsoft.UI.Xaml.Controls.Button\"]').filter(has_text='Saved to your recipes').click()")
+          edit('tests/test_web.py',"to_contain_text('Binding Title, Mode=OneWay')","to_contain_text('x:Bind ViewModel.Title, Mode=OneWay')")
+          with (ROOT/'site/refinements.css').open('a') as f:f.write('\n.side-bottom .row{font-size:9px;gap:6px}\n.side-bottom .row span:last-child{white-space:nowrap}\n.side-guide .btn{padding-left:6px;padding-right:6px;gap:6px;font-size:10px}\n')
+          print('Patched compiled-binding lesson, export and acceptance checks.')
+          PY
+          node --check site/app.js
+          python3 -m py_compile tests/test_web.py
+      - name: Commit only reviewed source files
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/Mise/RecipePage.xaml src/Mise/RecipePage.xaml.cs src/Mise/Platforms/WebAssembly/Program.cs site/app.js site/refinements.css tests/test_web.py
+          git commit -m 'Use compiled bindings for verified title lesson and source export [skip ci]'
+          git push origin HEAD:app-anatomy-mvp
