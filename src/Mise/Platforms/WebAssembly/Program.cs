@@ -5,6 +5,7 @@ public static class Program
     public static async Task Main(string[] args)
     {
         Console.WriteLine("App Anatomy: starting WebAssembly host");
+        Uno.UI.FeatureConfiguration.AutomationPeer.AutoEnableAccessibility = true;
         var host = UnoPlatformHostBuilder.Create()
             .App(() => new App())
             .UseWebAssembly()

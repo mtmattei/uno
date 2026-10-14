@@ -9,3 +9,7 @@
  .hero-study .source-float{bottom:53px;width:206px}
  .study-caption{right:15px;bottom:14px;line-height:1.6;background:#edf0e5;padding-top:7px}
 }
+
+.side-bottom .row{font-size:9px;gap:6px}
+.side-bottom .row span:last-child{white-space:nowrap}
+.side-guide .btn{padding-left:6px;padding-right:6px;gap:6px;font-size:10px}

@@ -16,8 +16,12 @@
     <!-- anatomy:photo:end -->
     <!-- anatomy:title:start -->
     <Border x:Name="TitleRegion" Tag="title" BorderThickness="1" BorderBrush="Transparent" Tapped="OnRegionTapped">
-     <TextBlock x:Name="RecipeTitle" Text="{Binding Title, Mode=OneWay}"
-                TextWrapping="Wrap" FontFamily="Georgia" FontSize="36" Foreground="#2C3025" />
+     <Grid>
+      <TextBlock x:Name="LiveTitle" Text="{x:Bind ViewModel.Title, Mode=OneWay}"
+                 TextWrapping="Wrap" FontFamily="Georgia" FontSize="36" Foreground="#2C3025" />
+      <TextBlock x:Name="OnceTitle" Text="{x:Bind ViewModel.Title, Mode=OneTime}" Visibility="Collapsed"
+                 TextWrapping="Wrap" FontFamily="Georgia" FontSize="36" Foreground="#2C3025" />
+     </Grid>
     </Border>
     <!-- anatomy:title:end -->
     <TextBlock Text="5 minutes    ·    Easy does it" FontSize="11" Foreground="#817463" />

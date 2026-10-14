@@ -28,7 +28,7 @@ public sealed partial class RecipePage : Page
             Publish();
         };
         ViewModel.PropertyChanged += (_, _) => DispatcherQueue.TryEnqueue(() => Publish());
-        Loaded += (_, _) => { _loaded = true; BrowserBridge.Attach(); Select("title"); };
+        Loaded += (_, _) => { _loaded = true; SetBindingMode(_binding); BrowserBridge.Attach(); Select("title"); };
         SizeChanged += (_, _) => { if (_loaded) DispatcherQueue.TryEnqueue(() => Publish()); };
     }
     private void OnRegionTapped(object sender, TappedRoutedEventArgs e)
@@ -62,17 +62,20 @@ public sealed partial class RecipePage : Page
         CoffeeCheck.IsHitTestVisible = WaterCheck.IsHitTestVisible = MilkCheck.IsHitTestVisible = _mode != "inspect";
         Publish();
     }
-    // The experiment replaces a real WinUI Binding, not a JavaScript imitation.
+    // Both modes are genuine compiled XAML bindings. The active TextBlock is
+    // selected explicitly; JavaScript never manufactures the rendered value.
+    private TextBlock ActiveTitle => _binding == "OneTime" ? OnceTitle : LiveTitle;
     private void SetBindingMode(string mode)
     {
         if (mode is not ("OneWay" or "OneTime")) return;
         _binding = mode;
-        RecipeTitle.ClearValue(TextBlock.TextProperty);
-        RecipeTitle.SetBinding(TextBlock.TextProperty, new Binding
-        {
-            Source = ViewModel, Path = new PropertyPath(nameof(RecipeViewModel.Title)),
-            Mode = mode == "OneWay" ? BindingMode.OneWay : BindingMode.OneTime
-        });
+        this.Bindings.Update();
+        LiveTitle.Visibility = mode == "OneWay" ? Visibility.Visible : Visibility.Collapsed;
+        OnceTitle.Visibility = mode == "OneTime" ? Visibility.Visible : Visibility.Collapsed;
+    }
+    private void SetTitleFontSize(double size)
+    {
+        LiveTitle.FontSize = OnceTitle.FontSize = size;
     }
     internal async Task Receive(string text)
     {
@@ -92,7 +95,7 @@ public sealed partial class RecipePage : Page
                 case "mode": _mode = value.GetString() == "use" ? "use" : "inspect"; Select(_selected); break;
                 case "title": ViewModel.Title = value.GetString() ?? ""; break;
                 case "binding": SetBindingMode(value.GetString() ?? "OneWay"); break;
-                case "fontSize": RecipeTitle.FontSize = Math.Clamp(value.GetDouble(), 24, 52); break;
+                case "fontSize": SetTitleFontSize(Math.Clamp(value.GetDouble(), 24, 52)); break;
                 case "spacing": ContentStack.Spacing = Math.Clamp(value.GetDouble(), 8, 28); break;
                 case "imageFit": RecipePhoto.Stretch = value.GetString() == "Uniform" ? Stretch.Uniform : Stretch.UniformToFill; break;
                 case "servings": ViewModel.Servings = value.GetInt32(); break;
@@ -107,7 +110,7 @@ public sealed partial class RecipePage : Page
                 case "reset":
                     if (ViewModel.IsBusy) throw new InvalidOperationException("Wait for saving to complete.");
                     SetBindingMode("OneWay"); ViewModel.Reset();
-                    RecipeTitle.FontSize = 36; ContentStack.Spacing = 16;
+                    SetTitleFontSize(36); ContentStack.Spacing = 16;
                     CoffeeCheck.IsChecked = WaterCheck.IsChecked = MilkCheck.IsChecked = false;
                     RecipePhoto.Stretch = Stretch.UniformToFill; _events.Clear(); break;
                 default: throw new ArgumentException("Unsupported command.");
@@ -129,10 +132,10 @@ public sealed partial class RecipePage : Page
         {
             ViewModel.Title = "A new title, without rebuilding";
             await Task.Delay(40);
-            var first = RecipeTitle.Text == ViewModel.Title;
+            var first = ActiveTitle.Text == ViewModel.Title;
             ViewModel.Title = "Another title, same live binding";
             await Task.Delay(40);
-            var second = RecipeTitle.Text == ViewModel.Title;
+            var second = ActiveTitle.Text == ViewModel.Title;
             BrowserBridge.Emit(JsonSerializer.Serialize(new
             {
                 type = "checks", requestId, passed = first && second,
@@ -151,14 +154,14 @@ public sealed partial class RecipePage : Page
         {
             type = "state", requestId, revision = ++_revision, runtime = "uno-wasm", app = "mise",
             selected = _selected, mode = _mode, binding = _binding,
-            title = ViewModel.Title, renderedTitle = RecipeTitle.Text,
-            fontSize = RecipeTitle.FontSize, spacing = ContentStack.Spacing,
+            title = ViewModel.Title, renderedTitle = ActiveTitle.Text,
+            fontSize = ActiveTitle.FontSize, spacing = ContentStack.Spacing,
             imageFit = RecipePhoto.Stretch.ToString(), servings = ViewModel.Servings,
             coffee = ViewModel.Coffee, water = ViewModel.Water, milk = ViewModel.Milk,
             saved = ViewModel.IsSaved, busy = ViewModel.IsBusy,
             @checked = new[] { CoffeeCheck.IsChecked == true, WaterCheck.IsChecked == true, MilkCheck.IsChecked == true },
             viewport = new { width = Math.Round(ActualWidth), height = Math.Round(ActualHeight) },
-            measured = new { titleWidth = Math.Round(RecipeTitle.ActualWidth), titleHeight = Math.Round(RecipeTitle.ActualHeight) },
+            measured = new { titleWidth = Math.Round(ActiveTitle.ActualWidth), titleHeight = Math.Round(ActiveTitle.ActualHeight) },
             events = _events
         }));
     }
