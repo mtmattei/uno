@@ -14,15 +14,22 @@ public sealed partial class RecipePage : Page
     private string _mode = "inspect", _selected = "title", _binding = "OneWay";
     private int _revision;
     private bool _loaded, _checking;
+    private readonly SemaphoreSlim _commands = new(1, 1);
     private readonly List<string> _events = new();
     private Border[] Regions => [PageRegion, PhotoRegion, TitleRegion, SaveRegion, ServingsRegion, IngredientsRegion];
+
     public RecipePage()
     {
         InitializeComponent(); Current = this; DataContext = ViewModel;
-        ViewModel.Traced += message => { _events.Insert(0, message); if (_events.Count > 16) _events.RemoveAt(16); Publish(); };
-        ViewModel.PropertyChanged += (_, _) => DispatcherQueue.TryEnqueue(Publish);
+        ViewModel.Traced += message =>
+        {
+            _events.Insert(0, message);
+            if (_events.Count > 16) _events.RemoveAt(16);
+            Publish();
+        };
+        ViewModel.PropertyChanged += (_, _) => DispatcherQueue.TryEnqueue(() => Publish());
         Loaded += (_, _) => { _loaded = true; BrowserBridge.Attach(); Select("title"); };
-        SizeChanged += (_, _) => { if (_loaded) DispatcherQueue.TryEnqueue(Publish); };
+        SizeChanged += (_, _) => { if (_loaded) DispatcherQueue.TryEnqueue(() => Publish()); };
     }
     private void OnRegionTapped(object sender, TappedRoutedEventArgs e)
     {
@@ -34,8 +41,16 @@ public sealed partial class RecipePage : Page
         if (_mode == "inspect") { Select("save"); return; }
         await ViewModel.SaveAsync(); Publish();
     }
-    private void OnLess(object sender, RoutedEventArgs e) { if (_mode == "inspect") Select("servings"); else ViewModel.Servings--; Publish(); }
-    private void OnMore(object sender, RoutedEventArgs e) { if (_mode == "inspect") Select("servings"); else ViewModel.Servings++; Publish(); }
+    private void OnLess(object sender, RoutedEventArgs e)
+    {
+        if (_mode == "inspect") Select("servings"); else ViewModel.Servings--;
+        Publish();
+    }
+    private void OnMore(object sender, RoutedEventArgs e)
+    {
+        if (_mode == "inspect") Select("servings"); else ViewModel.Servings++;
+        Publish();
+    }
     private void OnChecked(object sender, RoutedEventArgs e) { if (_loaded && !_checking) Publish(); }
     private void Select(string id)
     {
@@ -47,6 +62,7 @@ public sealed partial class RecipePage : Page
         CoffeeCheck.IsHitTestVisible = WaterCheck.IsHitTestVisible = MilkCheck.IsHitTestVisible = _mode != "inspect";
         Publish();
     }
+    // The experiment replaces a real WinUI Binding, not a JavaScript imitation.
     private void SetBindingMode(string mode)
     {
         if (mode is not ("OneWay" or "OneTime")) return;
@@ -60,6 +76,7 @@ public sealed partial class RecipePage : Page
     }
     internal async Task Receive(string text)
     {
+        await _commands.WaitAsync();
         string? requestId = null;
         try
         {
@@ -82,12 +99,15 @@ public sealed partial class RecipePage : Page
                 case "save": await ViewModel.SaveAsync(); break;
                 case "checked":
                     if (value.GetArrayLength() != 3) throw new ArgumentException("Expected three checks.");
-                    CoffeeCheck.IsChecked = value[0].GetBoolean(); WaterCheck.IsChecked = value[1].GetBoolean(); MilkCheck.IsChecked = value[2].GetBoolean(); break;
+                    CoffeeCheck.IsChecked = value[0].GetBoolean();
+                    WaterCheck.IsChecked = value[1].GetBoolean();
+                    MilkCheck.IsChecked = value[2].GetBoolean(); break;
                 case "challenge.start": SetBindingMode("OneTime"); ViewModel.Title = "Your Sunday coffee ritual"; break;
                 case "challenge.check": await CheckBinding(requestId); return;
                 case "reset":
                     if (ViewModel.IsBusy) throw new InvalidOperationException("Wait for saving to complete.");
-                    SetBindingMode("OneWay"); ViewModel.Reset(); RecipeTitle.FontSize = 36; ContentStack.Spacing = 16;
+                    SetBindingMode("OneWay"); ViewModel.Reset();
+                    RecipeTitle.FontSize = 36; ContentStack.Spacing = 16;
                     CoffeeCheck.IsChecked = WaterCheck.IsChecked = MilkCheck.IsChecked = false;
                     RecipePhoto.Stretch = Stretch.UniformToFill; _events.Clear(); break;
                 default: throw new ArgumentException("Unsupported command.");
@@ -95,7 +115,11 @@ public sealed partial class RecipePage : Page
             await Task.Delay(24);
             Publish(requestId);
         }
-        catch (Exception ex) { BrowserBridge.Emit(JsonSerializer.Serialize(new { type = "error", requestId, message = ex.Message })); }
+        catch (Exception ex)
+        {
+            BrowserBridge.Emit(JsonSerializer.Serialize(new { type = "error", requestId, message = ex.Message }));
+        }
+        finally { _commands.Release(); }
     }
     private async Task CheckBinding(string? requestId)
     {
@@ -114,7 +138,7 @@ public sealed partial class RecipePage : Page
                 type = "checks", requestId, passed = first && second,
                 results = new[] {
                     new { name = "First source change reaches the TextBlock", passed = first },
-                    new { name = "A second, unseen source change also reaches the TextBlock", passed = second }
+                    new { name = "A second source change also reaches the TextBlock", passed = second }
                 }
             }));
         }
